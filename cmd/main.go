@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	db "cms/database"
+)
 
 func main() {
-	fmt.Println("Kick Off CMS Service for User")
+	db.Init()
 }
