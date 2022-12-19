@@ -1,6 +1,6 @@
 # Simple CMS API Documentation
 
-Welcome to the API documentation for the simple CMS Service. This API allows you to get an artcle and category as user.
+Welcome to the API documentation for the simple CMS Service. This API allows you to get an article and category as user. This service using echo framework as well.
 
 
 ## Endpoints
