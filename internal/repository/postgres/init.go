@@ -8,8 +8,8 @@ import (
 )
 
 type Repository interface {
-	GetArticles(ctx echo.Context, limit int, offset int) ([]m.Article, error)
-	GetArticleDetails(ctx echo.Context, id int) (m.Article, error)
+	GetArticles(ctx echo.Context, limit int, offset int) ([]m.ResArticle, error)
+	GetArticleDetails(ctx echo.Context, id int) (m.ResArticle, error)
 	GetCategoryTree(ctx echo.Context) ([]m.Category, error)
 	GetCategoryByID(ctx echo.Context, id int) (m.Category, error)
 }

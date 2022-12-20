@@ -10,12 +10,12 @@ type Article struct {
 	UpdatedAt   string `json:"updated_at" form:"updated_at"`
 }
 
-type ArticleWithCategory struct {
-	Id          int      `json:"id"`
-	Title       string   `json:"title"`
-	Slug        string   `json:"slug"`
-	HtmlContent string   `json:"html_content"`
-	Category    Category `json:"category"`
-	CreatedAt   string   `json:"created_at"`
-	UpdatedAt   string   `json:"updated_at"`
+type ResArticle struct {
+	Id          int         `json:"id"`
+	Title       string      `json:"title"`
+	Slug        string      `json:"slug"`
+	HtmlContent string      `json:"html_content"`
+	ResCategory ResCategory `json:"category"`
+	CreatedAt   string      `json:"created_at"`
+	UpdatedAt   string      `json:"updated_at"`
 }
