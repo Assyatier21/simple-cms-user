@@ -19,5 +19,7 @@ The API has the following endpoints:
 $ go mod tidy
 $ go run cmd/main.go
 ```
-4. We can test the endpoint using the collection located in : `simple-cms-user/tools` 
+4. We can test the endpoint using the collection located in : `simple-cms-user/tools` :)
  
+
+
