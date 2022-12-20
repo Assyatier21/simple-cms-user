@@ -2,7 +2,7 @@ package config
 
 const (
 	User     = "postgres"
-	Password = "password"
+	Password = "123"
 	Host     = "localhost"
 	Port     = "5432"
 	Schema   = "cms-repository"
