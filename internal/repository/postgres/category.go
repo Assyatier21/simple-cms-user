@@ -3,13 +3,13 @@ package postgres
 import (
 	database "cms/database/queries"
 	m "cms/models"
+	"cms/utils"
+	"context"
 	"database/sql"
 	"log"
-
-	"github.com/labstack/echo/v4"
 )
 
-func (r *repository) GetCategoryTree(ctx echo.Context) ([]m.Category, error) {
+func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) {
 	var (
 		categories []m.Category
 		rows       *sql.Rows
@@ -28,6 +28,8 @@ func (r *repository) GetCategoryTree(ctx echo.Context) ([]m.Category, error) {
 			log.Println("[GetCategoryTree] failed to scan category, err :", err.Error())
 			return nil, err
 		}
+		temp.CreatedAt = utils.FormattedTime(temp.CreatedAt)
+		temp.UpdatedAt = utils.FormattedTime(temp.UpdatedAt)
 		categories = append(categories, temp)
 	}
 
@@ -37,7 +39,7 @@ func (r *repository) GetCategoryTree(ctx echo.Context) ([]m.Category, error) {
 		return []m.Category{}, nil
 	}
 }
-func (r *repository) GetCategoryByID(ctx echo.Context, id int) (m.Category, error) {
+func (r *repository) GetCategoryByID(ctx context.Context, id int) (m.Category, error) {
 	var (
 		category m.Category
 		err      error
@@ -48,6 +50,8 @@ func (r *repository) GetCategoryByID(ctx echo.Context, id int) (m.Category, erro
 		log.Println("[GetArticleDetails] failed to scan article, err:", err.Error())
 		return m.Category{}, err
 	}
+	category.CreatedAt = utils.FormattedTime(category.CreatedAt)
+	category.UpdatedAt = utils.FormattedTime(category.UpdatedAt)
 
 	return category, nil
 }

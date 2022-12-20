@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"time"
 )
@@ -30,4 +31,15 @@ func IsValidAlphaNumeric(s string) bool {
 func IsValidAlphaNumericHyphen(s string) bool {
 	regex, _ := regexp.Compile(`[a-zA-Z0-9-]+`)
 	return regex.MatchString(s)
+}
+
+func FormattedTime(ts string) string {
+	t, err := time.Parse(time.RFC3339, ts)
+	if err != nil {
+		log.Println(err)
+		return ""
+	}
+
+	formattedTime := t.Format("2006-01-02 15:04:05")
+	return formattedTime
 }

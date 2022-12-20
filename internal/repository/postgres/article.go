@@ -3,13 +3,13 @@ package postgres
 import (
 	database "cms/database/queries"
 	m "cms/models"
+	"cms/utils"
+	"context"
 	"database/sql"
 	"log"
-
-	"github.com/labstack/echo/v4"
 )
 
-func (r *repository) GetArticles(ctx echo.Context, limit int, offset int) ([]m.ResArticle, error) {
+func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error) {
 	var (
 		articles []m.ResArticle
 		rows     *sql.Rows
@@ -28,6 +28,8 @@ func (r *repository) GetArticles(ctx echo.Context, limit int, offset int) ([]m.R
 			log.Println("[GetArticles] failed to scan article, err :", err.Error())
 			return nil, err
 		}
+		temp.CreatedAt = utils.FormattedTime(temp.CreatedAt)
+		temp.UpdatedAt = utils.FormattedTime(temp.UpdatedAt)
 		articles = append(articles, temp)
 	}
 
@@ -36,9 +38,8 @@ func (r *repository) GetArticles(ctx echo.Context, limit int, offset int) ([]m.R
 	} else {
 		return []m.ResArticle{}, nil
 	}
-
 }
-func (r *repository) GetArticleDetails(ctx echo.Context, id int) (m.ResArticle, error) {
+func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error) {
 	var (
 		article m.ResArticle
 		err     error
@@ -49,6 +50,8 @@ func (r *repository) GetArticleDetails(ctx echo.Context, id int) (m.ResArticle, 
 		log.Println("[GetArticleDetails] failed to scan article, err:", err.Error())
 		return m.ResArticle{}, err
 	}
+	article.CreatedAt = utils.FormattedTime(article.CreatedAt)
+	article.UpdatedAt = utils.FormattedTime(article.UpdatedAt)
 
 	return article, nil
 }

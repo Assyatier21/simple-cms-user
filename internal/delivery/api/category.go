@@ -15,7 +15,7 @@ func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
 		datas []m.Category
 	)
 
-	datas, err = h.repository.GetCategoryTree(ctx)
+	datas, err = h.repository.GetCategoryTree(ctx.Request().Context())
 	if err != nil {
 		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
@@ -41,7 +41,7 @@ func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
 		id, _ = strconv.Atoi(ctx.FormValue("id"))
 	}
 
-	category, err := h.repository.GetCategoryByID(ctx, id)
+	category, err := h.repository.GetCategoryByID(ctx.Request().Context(), id)
 	if err != nil {
 		log.Println("[Delivery][GetCategoryByID] can't get category details, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, "failed to get category details")

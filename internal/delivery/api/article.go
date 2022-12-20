@@ -36,7 +36,7 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 		}
 	}
 
-	datas, err := h.repository.GetArticles(ctx, limit, offset)
+	datas, err := h.repository.GetArticles(ctx.Request().Context(), limit, offset)
 	if err != nil {
 		log.Println("[Delivery][GetArticles] can't get list of articles, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, "failed to get list of articles")
@@ -62,7 +62,7 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 		id, _ = strconv.Atoi(ctx.FormValue("id"))
 	}
 
-	article, err := h.repository.GetArticleDetails(ctx, id)
+	article, err := h.repository.GetArticleDetails(ctx.Request().Context(), id)
 	if err != nil {
 		log.Println("[Delivery][GetArticleDetails] can't get article details, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, "failed to get article details")
