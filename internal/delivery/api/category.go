@@ -17,9 +17,14 @@ func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
 
 	datas, err = h.repository.GetCategoryTree(ctx.Request().Context())
 	if err != nil {
-		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
-		return ctx.JSON(http.StatusInternalServerError, res)
+		if err == utils.ErrNotFound {
+			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
+			res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
 	}
 
 	categories := make([]interface{}, len(datas))
@@ -43,9 +48,14 @@ func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
 
 	category, err := h.repository.GetCategoryByID(ctx.Request().Context(), id)
 	if err != nil {
-		log.Println("[Delivery][GetCategoryByID] can't get category details, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, "failed to get category details")
-		return ctx.JSON(http.StatusInternalServerError, res)
+		if err == utils.ErrNotFound {
+			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			log.Println("[Delivery][GetCategoryByID] can't get category details, err:", err.Error())
+			res := m.SetError(http.StatusInternalServerError, "failed to get category details")
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
 	}
 
 	var data []interface{}

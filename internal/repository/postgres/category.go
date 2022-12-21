@@ -18,8 +18,12 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 
 	rows, err = r.db.Query(database.GetCategoryTree)
 	if err != nil {
-		log.Println("[GetCategoryTree] can't get list of categories, err:", err.Error())
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, utils.ErrNotFound
+		} else {
+			log.Println("[GetCategoryTree] can't get list of categories, err:", err.Error())
+			return nil, err
+		}
 	}
 
 	for rows.Next() {
@@ -47,8 +51,12 @@ func (r *repository) GetCategoryByID(ctx context.Context, id int) (m.Category, e
 
 	err = r.db.QueryRow(database.GetCategoryByID, id).Scan(&category.Id, &category.Title, &category.Slug, &category.CreatedAt, &category.UpdatedAt)
 	if err != nil {
-		log.Println("[GetArticleDetails] failed to scan article, err:", err.Error())
-		return m.Category{}, err
+		if err == sql.ErrNoRows {
+			return m.Category{}, utils.ErrNotFound
+		} else {
+			log.Println("[GetCategoryByID] failed to scan category, err:", err.Error())
+			return m.Category{}, err
+		}
 	}
 	category.CreatedAt = utils.FormattedTime(category.CreatedAt)
 	category.UpdatedAt = utils.FormattedTime(category.UpdatedAt)

@@ -18,8 +18,12 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 
 	rows, err = r.db.Query(database.GetArticles, limit, offset)
 	if err != nil {
-		log.Println("[GetArticles] can't get list of articles, err:", err.Error())
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, utils.ErrNotFound
+		} else {
+			log.Println("[GetArticles] can't get list of articles, err:", err.Error())
+			return nil, err
+		}
 	}
 
 	for rows.Next() {
@@ -47,8 +51,12 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 
 	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
 	if err != nil {
-		log.Println("[GetArticleDetails] failed to scan article, err:", err.Error())
-		return m.ResArticle{}, err
+		if err == sql.ErrNoRows {
+			return m.ResArticle{}, utils.ErrNotFound
+		} else {
+			log.Println("[GetArticleDetails] failed to scan article, err:", err.Error())
+			return m.ResArticle{}, err
+		}
 	}
 	article.CreatedAt = utils.FormattedTime(article.CreatedAt)
 	article.UpdatedAt = utils.FormattedTime(article.UpdatedAt)

@@ -38,9 +38,14 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 
 	datas, err := h.repository.GetArticles(ctx.Request().Context(), limit, offset)
 	if err != nil {
-		log.Println("[Delivery][GetArticles] can't get list of articles, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, "failed to get list of articles")
-		return ctx.JSON(http.StatusInternalServerError, res)
+		if err == utils.ErrNotFound {
+			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			log.Println("[Delivery][GetArticles] can't get list of articles, err:", err.Error())
+			res := m.SetError(http.StatusInternalServerError, "failed to get list of articles")
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
 	}
 
 	articles := make([]interface{}, len(datas))
@@ -64,9 +69,14 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 
 	article, err := h.repository.GetArticleDetails(ctx.Request().Context(), id)
 	if err != nil {
-		log.Println("[Delivery][GetArticleDetails] can't get article details, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, "failed to get article details")
-		return ctx.JSON(http.StatusInternalServerError, res)
+		if err == utils.ErrNotFound {
+			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			log.Println("[Delivery][GetArticleDetails] can't get article details, err:", err.Error())
+			res := m.SetError(http.StatusInternalServerError, "failed to get article details")
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
 	}
 
 	var data []interface{}
