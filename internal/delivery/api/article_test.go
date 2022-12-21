@@ -3,6 +3,7 @@ package api
 import (
 	mock_repo "cms/mock/repository/postgres"
 	m "cms/models"
+	"cms/utils"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -178,6 +179,19 @@ func Test_handler_GetArticles(t *testing.T) {
 			mock: func() {},
 		},
 		{
+			name: "error no data found",
+			args: args{
+				method: http.MethodGet,
+				path:   "/articles?limit=5&offset=0",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return([]m.ResArticle{}, utils.ErrNotFound)
+			},
+		},
+		{
 			name: "error repository",
 			args: args{
 				method: http.MethodGet,
@@ -267,6 +281,19 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			mock: func() {},
+		},
+		{
+			name: "sql no rows error",
+			args: args{
+				method: http.MethodGet,
+				path:   "/article?id=1",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{}, utils.ErrNotFound)
+			},
 		},
 		{
 			name: "repository error",

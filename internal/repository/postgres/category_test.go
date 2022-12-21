@@ -3,6 +3,7 @@ package postgres
 import (
 	m "cms/models"
 	"context"
+	"database/sql"
 	"errors"
 	"reflect"
 	"regexp"
@@ -86,6 +87,17 @@ func Test_repository_GetCategoryTree(t *testing.T) {
 			},
 		},
 		{
+			name: "sql no rows error",
+			args: args{
+				ctx: ctx,
+			},
+			want:    nil,
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT`)).WillReturnError(sql.ErrNoRows)
+			},
+		},
+		{
 			name: "query error",
 			args: args{
 				ctx: ctx,
@@ -153,6 +165,18 @@ func Test_repository_GetCategoryByID(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
 					AddRow(1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnRows(rows)
+			},
+		},
+		{
+			name: "sql no rows error",
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			want:    m.Category{},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnError(sql.ErrNoRows)
 			},
 		},
 		{

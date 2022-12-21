@@ -3,6 +3,7 @@ package api
 import (
 	mock_repo "cms/mock/repository/postgres"
 	m "cms/models"
+	"cms/utils"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -59,6 +60,20 @@ func Test_handler_GetCategoryTree(t *testing.T) {
 							UpdatedAt: "2022-12-01 20:29:00",
 						},
 					}, nil)
+			},
+		},
+		{
+			name: "sql no rows error",
+			args: args{
+				method: http.MethodGet,
+				path:   "/categories",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockRepository.EXPECT().GetCategoryTree(gomock.Any()).Return(
+					[]m.Category{}, utils.ErrNotFound)
 			},
 		},
 		{
@@ -161,6 +176,19 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusBadRequest,
 			},
 			mock: func() {},
+		},
+		{
+			name: "sql no rows error",
+			args: args{
+				method: http.MethodGet,
+				path:   "/category?id=1",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{}, utils.ErrNotFound)
+			},
 		},
 		{
 			name: "repository error",

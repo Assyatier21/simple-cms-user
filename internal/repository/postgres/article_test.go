@@ -3,6 +3,7 @@ package postgres
 import (
 	m "cms/models"
 	"context"
+	"database/sql"
 	"errors"
 	"reflect"
 	"regexp"
@@ -108,6 +109,19 @@ func Test_repository_GetArticles(t *testing.T) {
 			},
 		},
 		{
+			name: "sql error no rows",
+			args: args{
+				ctx:    ctx,
+				limit:  5,
+				offset: 0,
+			},
+			want:    nil,
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id ORDER BY a.id LIMIT $1 OFFSET $2`)).WillReturnError(sql.ErrNoRows)
+			},
+		},
+		{
 			name: "query error",
 			args: args{
 				ctx:    ctx,
@@ -195,6 +209,18 @@ func Test_repository_GetArticleDetails(t *testing.T) {
 			wantErr: true,
 			mock: func() {
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id WHERE a.id = $1`)).WillReturnError(errors.New("error while scanning"))
+			},
+		},
+		{
+			name: "sql no rows error",
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			want:    m.ResArticle{},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id WHERE a.id = $1`)).WillReturnError(sql.ErrNoRows)
 			},
 		},
 	}
