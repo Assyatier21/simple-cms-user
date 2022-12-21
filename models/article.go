@@ -19,3 +19,11 @@ type ResArticle struct {
 	CreatedAt   string      `json:"created_at"`
 	UpdatedAt   string      `json:"updated_at"`
 }
+
+type MetaTag struct {
+	Title       string   `json:"meta_title"`
+	Description string   `json:"meta_description"`
+	Author      string   `json:"meta_author"`
+	Keywords    []string `json:"meta_keywords"`
+	Robots      []string `json:"meta_robots"`
+}

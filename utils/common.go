@@ -14,7 +14,7 @@ var (
 )
 
 func IsValidAlphabet(s string) bool {
-	regex, _ := regexp.Compile(`(^[a-zA-Z]+$)`)
+	regex, _ := regexp.Compile(`^[a-zA-Z ]*$`)
 	return regex.MatchString(s)
 }
 
