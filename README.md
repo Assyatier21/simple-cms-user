@@ -24,9 +24,10 @@ cd simple-cms-user
 go mod tidy
 ```
 
-- Create `config` folder in root path, then create a `connection.go` file with the following contents:
+- Create `config` folder in root path, then create a file `connection.go` in that folder with the following contents:
 
-```package config
+```
+package config
 
 const (
 	User     = "YOUR_USERNAME_HERE"
