@@ -44,7 +44,7 @@ We can test the endpoint using the collection located in : `simple-cms-user/tool
 ### Testing
 
 ```
-go test -v -coverprofile cover.out ./...
+go test -v -coverprofile coverage.out ./...
 ```
 
 ## Install Local Sonarqube
