@@ -6,14 +6,17 @@ import (
 	"cms/utils"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"log"
 )
 
 func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error) {
 	var (
-		articles []m.ResArticle
-		rows     *sql.Rows
-		err      error
+		articles     []m.ResArticle
+		metadata     m.MetaData
+		rows         *sql.Rows
+		tempMetaData []byte
+		err          error
 	)
 
 	rows, err = r.db.Query(database.GetArticles, limit, offset)
@@ -32,6 +35,16 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 			log.Println("[GetArticles] failed to scan article, err :", err.Error())
 			return nil, err
 		}
+
+		err = r.db.QueryRow(database.GetMetaData, temp.Id).Scan(&tempMetaData)
+		if err != nil {
+			log.Println("[GetArticleDetails] failed to scan metadata, err :", err.Error())
+			return nil, err
+		}
+
+		json.Unmarshal(tempMetaData, &metadata)
+		temp.MetaData = metadata
+
 		temp.CreatedAt = utils.FormattedTime(temp.CreatedAt)
 		temp.UpdatedAt = utils.FormattedTime(temp.UpdatedAt)
 		articles = append(articles, temp)
@@ -45,8 +58,10 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 }
 func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error) {
 	var (
-		article m.ResArticle
-		err     error
+		article      m.ResArticle
+		err          error
+		tempMetaData []byte
+		metadata     m.MetaData
 	)
 
 	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
@@ -58,6 +73,16 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 			return m.ResArticle{}, err
 		}
 	}
+
+	err = r.db.QueryRow(database.GetMetaData, article.Id).Scan(&tempMetaData)
+	if err != nil {
+		log.Println("[GetArticleDetails] failed to scan metadata, err :", err.Error())
+		return m.ResArticle{}, err
+	}
+
+	json.Unmarshal(tempMetaData, &metadata)
+	article.MetaData = metadata
+
 	article.CreatedAt = utils.FormattedTime(article.CreatedAt)
 	article.UpdatedAt = utils.FormattedTime(article.UpdatedAt)
 
