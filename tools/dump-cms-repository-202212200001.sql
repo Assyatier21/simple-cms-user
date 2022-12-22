@@ -5,7 +5,7 @@
 -- Dumped from database version 14.6 (Homebrew)
 -- Dumped by pg_dump version 15.1
 
--- Started on 2022-12-20 00:01:27 WIB
+-- Started on 2022-12-22 19:07:27 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -67,7 +67,8 @@ CREATE TABLE "cms-repository".cms_article (
     html_content character varying NOT NULL,
     category_id integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone DEFAULT now() NOT NULL
+    updated_at timestamp without time zone DEFAULT now() NOT NULL,
+    metadata json
 );
 
 
@@ -125,9 +126,45 @@ ALTER TABLE "cms-repository".cms_category ALTER COLUMN id ADD GENERATED ALWAYS A
 -- Data for Name: cms_article; Type: TABLE DATA; Schema: cms-repository; Owner: postgres
 --
 
-INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (2, 'My Article Title', 'my-article-slug', '<p>This is the HTML content of my article.</p>', 1, '2022-12-19 23:20:15.215756', '2022-12-19 23:20:15.215');
-INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (3, 'My Article Title 2', 'my-article-slug-v2', '<p>This is the HTML content of my article 2.</p>', 1, '2022-12-19 23:20:35.73271', '2022-12-19 23:20:15.215');
-INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (4, 'My Article Title 3', 'my-article-slug-v3', '<p>This is the HTML content of my article 3.</p>', 1, '2022-12-19 23:20:48.600777', '2022-12-19 23:20:15.215');
+INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (2, 'My Article Title', 'my-article-slug', '<p>This is the HTML content of my article.</p>', 2, '2022-12-19 23:20:15', '2022-12-19 23:20:15', '{
+  "meta_title": "Title 1",
+  "meta_description": "This is Description 1",
+  "meta_author": "Muhammad Sholeh",
+  "meta_keywords": [
+    "description",
+    "testing1"
+  ],
+  "meta_robots": [
+    "following",
+    "no-index"
+  ]
+}');
+INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (3, 'My Article Title 2', 'my-article-slug-v2', '<p>This is the HTML content of my article 2.</p>', 3, '2022-12-19 23:20:35', '2022-12-19 23:20:15', '{
+  "meta_title": "Title 2",
+  "meta_description": "This is Description 2",
+  "meta_author": "Muhammad Sholeh",
+  "meta_keywords": [
+    "description",
+    "testing2"
+  ],
+  "meta_robots": [
+    "following",
+    "no-index"
+  ]
+}');
+INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (4, 'My Article Title 3', 'my-article-slug-v3', '<p>This is the HTML content of my article 3.</p>', 1, '2022-12-19 23:20:48', '2022-12-19 23:20:15', '{
+  "meta_title": "Title 3",
+  "meta_description": "This is Description 3",
+  "meta_author": "Muhammad Sholeh",
+  "meta_keywords": [
+    "description",
+    "testing3"
+  ],
+  "meta_robots": [
+    "following",
+    "no-index"
+  ]
+}');
 
 
 --
@@ -193,7 +230,7 @@ ALTER TABLE ONLY "cms-repository".cms_article
     ADD CONSTRAINT slug UNIQUE (slug);
 
 
--- Completed on 2022-12-20 00:01:27 WIB
+-- Completed on 2022-12-22 19:07:27 WIB
 
 --
 -- PostgreSQL database dump complete
