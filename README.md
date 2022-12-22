@@ -1,8 +1,36 @@
-# Simple CMS API Documentation
+# Simple CMS User
 
 Welcome to the API documentation for the simple CMS Service. This API allows you to get an article and category as user. This service using echo framework as well.
 
-## Endpoints
+## Getting Started
+
+### Prerequisites
+
+- [Go 1.19.3](https://go.dev/dl/)
+- [PostgreSQL](https://www.postgresql.org/download/)
+
+### Installation
+
+- Clone the git repository:
+
+```
+git clone https://github.com/Assyatier21/simple-cms-user.git
+cd simple-cms-user
+```
+
+- Install Dependencies
+
+```
+go mod tidy
+```
+
+### Running
+
+```
+go run cmd/main.go
+```
+
+### API Endpoints Documentation
 
 The API has the following endpoints:
 
@@ -11,15 +39,18 @@ The API has the following endpoints:
 - `/v1/categories`: get list of categories
 - `/v1/category`: get details of category by id
 
-## Installation and How to run it locally
+We can test the endpoint using the collection located in : `simple-cms-user/tools`.
 
-1. Clone the repository
-2. Import the database (PostgreSQL) into your local. SQL file location: `simple-cms-user/tools`
-3. Then run this command below:
+### Testing
 
-```bash
-$ go mod tidy
-$ go run cmd/main.go
+```
+go test -v -coverprofile cover.out ./...
 ```
 
-4. We can test the endpoint using the collection located in : `simple-cms-user/tools` :)
+## Install Local Sonarqube
+
+please follow this [tutorial](https://techblost.com/how-to-setup-sonarqube-locally-on-mac/) as well.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/Assyatier21/simple-cms-user/blob/master/LICENSE) file for details.
