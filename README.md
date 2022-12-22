@@ -24,6 +24,21 @@ cd simple-cms-user
 go mod tidy
 ```
 
+- Create `config` folder in root path, then create a `connection.go` file with the following contents:
+
+```package config
+
+const (
+	User     = "YOUR_USERNAME_HERE"
+	Password = "YOUR_PASSWORD_HERE"
+	Host     = "localhost"
+	Port     = "5432"
+	Database = "YOUR_DATABASE_HERE"
+	Schema   = "YOUR_SCHEMA_HERE"
+	Sslmode  = "disable"
+)
+```
+
 ### Running
 
 ```
