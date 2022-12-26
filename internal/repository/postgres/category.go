@@ -32,8 +32,7 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 			log.Println("[GetCategoryTree] failed to scan category, err :", err.Error())
 			return nil, err
 		}
-		temp.CreatedAt = utils.FormattedTime(temp.CreatedAt)
-		temp.UpdatedAt = utils.FormattedTime(temp.UpdatedAt)
+		FormatTimeResCategory(&temp)
 		categories = append(categories, temp)
 	}
 
@@ -58,8 +57,6 @@ func (r *repository) GetCategoryByID(ctx context.Context, id int) (m.Category, e
 			return m.Category{}, err
 		}
 	}
-	category.CreatedAt = utils.FormattedTime(category.CreatedAt)
-	category.UpdatedAt = utils.FormattedTime(category.UpdatedAt)
-
+	FormatTimeResCategory(&category)
 	return category, nil
 }

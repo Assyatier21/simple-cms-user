@@ -42,11 +42,10 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 			return nil, err
 		}
 
+		FormatTimeResArticle(&temp)
 		json.Unmarshal(tempMetaData, &metadata)
 		temp.MetaData = metadata
 
-		temp.CreatedAt = utils.FormattedTime(temp.CreatedAt)
-		temp.UpdatedAt = utils.FormattedTime(temp.UpdatedAt)
 		articles = append(articles, temp)
 	}
 
@@ -80,11 +79,9 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 		return m.ResArticle{}, err
 	}
 
+	FormatTimeResArticle(&article)
 	json.Unmarshal(tempMetaData, &metadata)
 	article.MetaData = metadata
-
-	article.CreatedAt = utils.FormattedTime(article.CreatedAt)
-	article.UpdatedAt = utils.FormattedTime(article.UpdatedAt)
 
 	return article, nil
 }
