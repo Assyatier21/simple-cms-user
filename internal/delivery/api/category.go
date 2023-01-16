@@ -40,7 +40,7 @@ func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
 	)
 
 	if !utils.IsValidNumeric(ctx.FormValue("id")) {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	} else {
 		id, _ = strconv.Atoi(ctx.FormValue("id"))

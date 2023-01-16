@@ -21,7 +21,7 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 	} else {
 		limit, err = strconv.Atoi(ctx.FormValue("limit"))
 		if err != nil {
-			res := m.SetError(http.StatusBadRequest, "limit must be an integer")
+			res := m.SetError(http.StatusBadRequest, utils.ErrorFormatLimitStr)
 			return ctx.JSON(http.StatusBadRequest, res)
 		}
 	}
@@ -31,7 +31,7 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 	} else {
 		offset, err = strconv.Atoi(ctx.FormValue("offset"))
 		if err != nil {
-			res := m.SetError(http.StatusBadRequest, "offset must be an integer")
+			res := m.SetError(http.StatusBadRequest, utils.ErrorFormatOffsetStr)
 			return ctx.JSON(http.StatusBadRequest, res)
 		}
 	}
@@ -61,7 +61,7 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 	)
 
 	if !utils.IsValidNumeric(ctx.FormValue("id")) {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	} else {
 		id, _ = strconv.Atoi(ctx.FormValue("id"))
