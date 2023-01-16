@@ -1,16 +1,9 @@
 package utils
 
 import (
-	"errors"
-	"fmt"
 	"log"
 	"regexp"
 	"time"
-)
-
-var (
-	ErrNotFound = errors.New("data not found")
-	TimeNow     = fmt.Sprintf("%d-%d-%d %d:%d:%d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
 )
 
 func IsValidAlphabet(s string) bool {

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"cms/internal/delivery/api"
+	"cms/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -13,10 +14,10 @@ func GetRoutes(handler api.Handler) *echo.Echo {
 	useMiddlewares(e)
 
 	g := e.Group("/v1")
-	g.GET("/articles", handler.GetArticles)
-	g.GET("/article", handler.GetArticleDetails)
-	g.GET("/categories", handler.GetCategoryTree)
-	g.GET("/category", handler.GetCategoryByID)
+	g.GET(utils.PathArticles, handler.GetArticles)
+	g.GET(utils.PathArticle, handler.GetArticleDetails)
+	g.GET(utils.PathCategories, handler.GetCategoryTree)
+	g.GET(utils.PathCategory, handler.GetCategoryByID)
 
 	return e
 }
