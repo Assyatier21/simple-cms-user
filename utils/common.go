@@ -1,31 +1,21 @@
 package utils
 
 import (
+	m "cms-user/models"
 	"log"
-	"regexp"
 	"time"
 )
 
-func IsValidAlphabet(s string) bool {
-	regex, _ := regexp.Compile(`^[a-zA-Z ]*$`)
-	return regex.MatchString(s)
+func FormatTimeResArticle(article *m.ResArticle) m.ResArticle {
+	article.CreatedAt = FormattedTime(article.CreatedAt)
+	article.UpdatedAt = FormattedTime(article.UpdatedAt)
+	return *article
 }
-
-func IsValidNumeric(s string) bool {
-	regex, _ := regexp.Compile(`([0-9])`)
-	return regex.MatchString(s)
+func FormatTimeResCategory(category *m.Category) m.Category {
+	category.CreatedAt = FormattedTime(category.CreatedAt)
+	category.UpdatedAt = FormattedTime(category.UpdatedAt)
+	return *category
 }
-
-func IsValidAlphaNumeric(s string) bool {
-	regex, _ := regexp.Compile(`(^[a-zA-Z0-9]*$)`)
-	return regex.MatchString(s)
-}
-
-func IsValidAlphaNumericHyphen(s string) bool {
-	regex, _ := regexp.Compile(`[a-zA-Z0-9-]+`)
-	return regex.MatchString(s)
-}
-
 func FormattedTime(ts string) string {
 	t, err := time.Parse(time.RFC3339, ts)
 	if err != nil {

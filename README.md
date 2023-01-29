@@ -1,6 +1,6 @@
 # Simple CMS User
 
-Welcome to the API documentation for the simple CMS Service. This API allows you to get an article and category as user. This service using echo framework as well.
+Welcome to the Simple CMS User Service. An open-source Content Management System based on the echo framework. As users, we can use the features provided by this service in the form of searching for articles and categories including details of each item. This service has implemented clean architecture principles, a practical software architecture solution from Robert C. Martin (known as Uncle Bob).
 
 ## Getting Started
 
@@ -14,17 +14,17 @@ Welcome to the API documentation for the simple CMS Service. This API allows you
 - Clone the git repository:
 
 ```
-git clone https://github.com/Assyatier21/simple-cms-user.git
-cd simple-cms-user
+$ git clone https://github.com/Assyatier21/simple-cms-user.git
+$ cd simple-cms-user
 ```
 
 - Install Dependencies
 
 ```
-go mod tidy
+$ go mod tidy
 ```
 
-- Create `config` folder in root path, then create a file `connection.go` in that folder with the following contents:
+- Create `config` folder in root path, then create a file `connection.go` in that folder containing this following code:
 
 ```
 package config
@@ -40,27 +40,33 @@ const (
 )
 ```
 
+alternatively, we can just run this following command using makefile:
+
+```
+$ make all
+```
+
 ### Running
 
 ```
-go run cmd/main.go
+$ go run cmd/main.go
 ```
 
-### API Endpoints Documentation
+### Features
 
-The API has the following endpoints:
+This service has the following API endpoints:
 
-- `/v1/articles`: get list of articles
-- `/v1/article`: get details of article by id
+- `/v1/articles`: get list of articles use limit and offset
+- `/v1/article`: get article details by id
 - `/v1/categories`: get list of categories
-- `/v1/category`: get details of category by id
+- `/v1/category`: get category details by id
 
-We can test the endpoint using the collection located in : `simple-cms-user/tools`.
+We can test the endpoint using the postman collection in `simple-cms-user/tools`.
 
 ### Testing
 
 ```
-go test -v -coverprofile coverage.out ./...
+$ go test -v -coverprofile coverage.out ./...
 ```
 
 ## Install Local Sonarqube

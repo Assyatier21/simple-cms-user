@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	m "cms/models"
+	m "cms-user/models"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -35,28 +35,10 @@ func Test_repository_GetArticles(t *testing.T) {
 		mock    func()
 	}{
 		{
-			name: "scan error",
+			name: "error scan metadata",
 			args: args{
 				ctx:    ctx,
-				limit:  5,
-				offset: 0,
-			},
-			want:    nil,
-			wantErr: true,
-			mock: func() {
-				// usecase: id type changed from int to string
-				rows := sqlmock.NewRows([]string{"id", "title", "slug", "html_content", "category_id", "category_title", "category_slug", "created_at", "updated_at"}).
-					AddRow("id not number", "title 1", "article-1", "<p> this is article 1</p>", 1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z").
-					AddRow("id not number", "title 2", "article-2", "<p> this is article 2</p>", 2, "category 2", "category-2", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
-				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id ORDER BY a.id LIMIT $1 OFFSET $2`)).WillReturnRows(rows)
-
-			},
-		},
-		{
-			name: "scan metadata error",
-			args: args{
-				ctx:    ctx,
-				limit:  5,
+				limit:  100,
 				offset: 0,
 			},
 			want:    nil,
@@ -72,7 +54,7 @@ func Test_repository_GetArticles(t *testing.T) {
 			name: "success",
 			args: args{
 				ctx:    ctx,
-				limit:  5,
+				limit:  100,
 				offset: 0,
 			},
 			want: []m.ResArticle{
@@ -97,8 +79,8 @@ func Test_repository_GetArticles(t *testing.T) {
 							"following", "no-index",
 						},
 					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
 				},
 			},
 			wantErr: false,
@@ -106,7 +88,6 @@ func Test_repository_GetArticles(t *testing.T) {
 				rows := sqlmock.NewRows([]string{"id", "title", "slug", "html_content", "category_id", "category_title", "category_slug", "created_at", "updated_at"}).
 					AddRow(1, "title 1", "article-1", "<p> this is article 1</p>", 1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id ORDER BY a.id LIMIT $1 OFFSET $2`)).WillReturnRows(rows)
-
 				temp := m.MetaData{
 					Title:       "metatitle 1",
 					Description: "metadescription 1",
@@ -123,14 +104,13 @@ func Test_repository_GetArticles(t *testing.T) {
 				metadata := sqlMock.NewRows([]string{"metadata"}).
 					AddRow(tempMetaData)
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT`)).WithArgs(1).WillReturnRows(metadata)
-
 			},
 		},
 		{
-			name: "success with empty article",
+			name: "success with empty articles",
 			args: args{
 				ctx:    ctx,
-				limit:  5,
+				limit:  100,
 				offset: 0,
 			},
 			want:    []m.ResArticle{},
@@ -141,30 +121,32 @@ func Test_repository_GetArticles(t *testing.T) {
 			},
 		},
 		{
-			name: "sql error no rows",
+			name: "error query",
 			args: args{
 				ctx:    ctx,
-				limit:  5,
+				limit:  100,
 				offset: 0,
 			},
 			want:    nil,
 			wantErr: true,
 			mock: func() {
-				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id ORDER BY a.id LIMIT $1 OFFSET $2`)).WillReturnError(sql.ErrNoRows)
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "html_content", "category_id", "category_title", "category_slug", "created_at", "updated_at"}).
+					AddRow("id not number", "title 1", "article-1", "<p> this is article 1</p>", 1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z").
+					AddRow("id not number", "title 2", "article-2", "<p> this is article 2</p>", 2, "category 2", "category-2", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id ORDER BY a.id LIMIT $1 OFFSET $2`)).WillReturnRows(rows)
 			},
 		},
 		{
-			name: "query error",
+			name: "error scan rows",
 			args: args{
 				ctx:    ctx,
-				limit:  5,
+				limit:  100,
 				offset: 0,
 			},
 			want:    nil,
 			wantErr: true,
 			mock: func() {
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT d.id, d.title, d.slug, d.html_content, c.id, c.title , c.slug, d.created_at, d.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id ORDER BY a.id LIMIT $1 OFFSET $2`)).WillReturnError(errors.New("query error"))
-
 			},
 		},
 	}
@@ -232,13 +214,14 @@ func Test_repository_GetArticleDetails(t *testing.T) {
 						"following", "no-index",
 					},
 				},
-				CreatedAt: "2022-12-01 20:29:00",
-				UpdatedAt: "2022-12-01 20:29:00",
+				CreatedAt: "2022-12-01T20:29:00Z",
+				UpdatedAt: "2022-12-01T20:29:00Z",
 			},
 			wantErr: false,
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "slug", "html_content", "category_id", "category_title", "category_slug", "created_at", "updated_at"}).
 					AddRow(1, "title 1", "article-1", "<p> this is article 1</p>", 1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT a.id, a.title, a.slug, a.html_content, c.id, c.title , c.slug, a.created_at, a.updated_at FROM cms_article a JOIN cms_category c ON a.category_id = c.id WHERE a.id = $1`)).WillReturnRows(rows)
 
 				temp := m.MetaData{

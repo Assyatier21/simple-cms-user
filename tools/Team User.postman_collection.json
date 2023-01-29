@@ -23,6 +23,18 @@
 					"path": [
 						"v1",
 						"articles"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "offset",
+							"value": "1",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -34,7 +46,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "127.0.0.1:8800/v1/article?id=3",
+					"raw": "127.0.0.1:8800/v1/article?id=2",
 					"host": [
 						"127",
 						"0",
@@ -49,7 +61,7 @@
 					"query": [
 						{
 							"key": "id",
-							"value": "3"
+							"value": "2"
 						}
 					]
 				}
@@ -73,6 +85,13 @@
 					"path": [
 						"v1",
 						"categories"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
 					]
 				}
 			},

@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	m "cms/models"
+	m "cms-user/models"
 	"context"
 	"database/sql"
 	"errors"
@@ -40,7 +40,7 @@ func Test_repository_GetCategoryTree(t *testing.T) {
 			wantErr: true,
 			mock: func() {
 				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
-					AddRow("WRONG TYPE ID", "category 1", "category-1", "2022-12-01 20:29:00", "2022-12-01 20:29:00").
+					AddRow("WRONG TYPE ID", "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z").
 					AddRow("WRONG TYPE ID", "category 2", "category-2", "2022-12-01 20:29:00", "2022-12-01 20:29:00")
 				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category ORDER BY id`)).WillReturnRows(rows)
 			},
@@ -55,15 +55,15 @@ func Test_repository_GetCategoryTree(t *testing.T) {
 					Id:        1,
 					Title:     "category 1",
 					Slug:      "category-1",
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
 				},
 				{
 					Id:        2,
 					Title:     "category 2",
 					Slug:      "category-2",
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
 				},
 			},
 			wantErr: false,
@@ -126,8 +126,7 @@ func Test_repository_GetCategoryTree(t *testing.T) {
 		})
 	}
 }
-
-func Test_repository_GetCategoryByID(t *testing.T) {
+func Test_repository_GetCategoryDetails(t *testing.T) {
 	ctx := context.Background()
 
 	db, sqlMock, err := sqlmock.New()
@@ -157,8 +156,8 @@ func Test_repository_GetCategoryByID(t *testing.T) {
 				Id:        1,
 				Title:     "category 1",
 				Slug:      "category-1",
-				CreatedAt: "2022-12-01 20:29:00",
-				UpdatedAt: "2022-12-01 20:29:00",
+				CreatedAt: "2022-12-01T20:29:00Z",
+				UpdatedAt: "2022-12-01T20:29:00Z",
 			},
 			wantErr: false,
 			mock: func() {
@@ -199,13 +198,13 @@ func Test_repository_GetCategoryByID(t *testing.T) {
 			r := &repository{
 				db: db,
 			}
-			got, err := r.GetCategoryByID(tt.args.ctx, tt.args.id)
+			got, err := r.GetCategoryDetails(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("repository.GetCategoryByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("repository.GetCategoryDetails() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("repository.GetCategoryByID() = %v, want %v", got, tt.want)
+				t.Errorf("repository.GetCategoryDetails() = %v, want %v", got, tt.want)
 			}
 		})
 	}
