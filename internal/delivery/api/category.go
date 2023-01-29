@@ -1,8 +1,10 @@
 package api
 
 import (
-	m "cms/models"
-	"cms/utils"
+	m "cms-user/models"
+	msg "cms-user/models/lib"
+	"cms-user/utils"
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
@@ -11,56 +13,38 @@ import (
 )
 
 func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
-	var (
-		datas []m.Category
-	)
-
-	datas, err = h.repository.GetCategoryTree(ctx.Request().Context())
+	categories, err := h.usecase.GetCategoryTree(ctx.Request().Context())
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
-			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
-			return ctx.JSON(http.StatusInternalServerError, res)
-		}
+		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	categories := make([]interface{}, len(datas))
-	for i, v := range datas {
-		categories[i] = v
-	}
-	res := m.SetResponse(http.StatusOK, "success", categories)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "list of categories returned successfully", categories)
 	return ctx.JSON(http.StatusOK, res)
 }
-func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
+func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 	var (
 		id int
 	)
 
-	if !utils.IsValidNumeric(ctx.FormValue("id")) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
-		return ctx.JSON(http.StatusBadRequest, res)
-	} else {
-		id, _ = strconv.Atoi(ctx.FormValue("id"))
-	}
-
-	category, err := h.repository.GetCategoryByID(ctx.Request().Context(), id)
+	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
-			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetCategoryByID] can't get category details, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get category details")
-			return ctx.JSON(http.StatusInternalServerError, res)
-		}
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
+		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	var data []interface{}
-	data = append(data, category)
+	category, err := h.usecase.GetCategoryDetails(ctx.Request().Context(), id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category found", []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		}
+		log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
+	}
 
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "category details returned successfully", category)
 	return ctx.JSON(http.StatusOK, res)
 }

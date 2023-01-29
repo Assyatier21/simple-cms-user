@@ -1,18 +1,18 @@
 package utils
 
 import (
-	"errors"
-	"fmt"
 	"time"
 )
 
 var (
-	PathArticles   = "/articles"
-	PathArticle    = "/article"
-	PathCategories = "/categories"
-	PathCategory   = "/category"
-	ErrNotFound    = errors.New("data not found")
-	NoRowsAffected = errors.New("no rows affected")
-	jakartaLoc, _  = time.LoadLocation("Asia/Jakarta")
-	TimeNow        = fmt.Sprintf("%d-%d-%d %d:%d:%d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	STATUS_SUCCESS = "success"
+	STATUS_FAILED  = "failed"
+
+	PATH_ARTICLES   = "/articles"
+	PATH_ARTICLE    = "/article"
+	PATH_CATEGORIES = "/categories"
+	PATH_CATEGORY   = "/category"
+
+	jakartaLoc, _ = time.LoadLocation("Asia/Jakarta")
+	TimeNow       = time.Now().In(jakartaLoc).Format("2006-01-02T15:04:05Z")
 )

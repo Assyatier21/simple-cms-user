@@ -1,15 +1,15 @@
 package api
 
 import (
-	mock_repo "cms/mock/repository/postgres"
-	m "cms/models"
-	"cms/utils"
+	mock_usecase "cms-user/mock/usecase"
+	m "cms-user/models"
+	"database/sql"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-playground/assert/v2"
+	"github.com/go-playground/assert"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +18,7 @@ func Test_handler_GetArticles(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -43,39 +43,43 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 100, 0).Return(
-					[]m.ResArticle{
-						{
-							Id:          1,
-							Title:       "title 1",
-							Slug:        "article-1",
-							HtmlContent: "<p> this is article 1</p>",
-							ResCategory: m.ResCategory{
-								Id:    1,
-								Title: "category 1",
-								Slug:  "category-1",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
 						},
-						{
-							Id:          2,
-							Title:       "title 2",
-							Slug:        "article-2",
-							HtmlContent: "<p> this is article 2</p>",
-							ResCategory: m.ResCategory{
-								Id:    2,
-								Title: "category 2",
-								Slug:  "category-2",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:          2,
+						Title:       "title 2",
+						Slug:        "article-2",
+						HtmlContent: "<p> this is article 2</p>",
+						ResCategory: m.ResCategory{
+							Id:    2,
+							Title: "catgegory 2",
+							Slug:  "category-2",
 						},
-					}, nil)
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var articles []interface{}
+				for _, v := range data {
+					articles = append(articles, v)
+				}
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 100, 0).Return(articles, nil)
 			},
 		},
 		{
-			name: "success with defined limit",
+			name: "success defined limit",
 			args: args{
 				method: http.MethodGet,
 				path:   "/articles?limit=5",
@@ -84,83 +88,91 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(
-					[]m.ResArticle{
-						{
-							Id:          1,
-							Title:       "title 1",
-							Slug:        "article-1",
-							HtmlContent: "<p> this is article 1</p>",
-							ResCategory: m.ResCategory{
-								Id:    1,
-								Title: "category 1",
-								Slug:  "category-1",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
 						},
-						{
-							Id:          2,
-							Title:       "title 2",
-							Slug:        "article-2",
-							HtmlContent: "<p> this is article 2</p>",
-							ResCategory: m.ResCategory{
-								Id:    2,
-								Title: "category 2",
-								Slug:  "category-2",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:          2,
+						Title:       "title 2",
+						Slug:        "article-2",
+						HtmlContent: "<p> this is article 2</p>",
+						ResCategory: m.ResCategory{
+							Id:    2,
+							Title: "catgegory 2",
+							Slug:  "category-2",
 						},
-					}, nil)
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var articles []interface{}
+				for _, v := range data {
+					articles = append(articles, v)
+				}
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(articles, nil)
 			},
 		},
 		{
-			name: "success with defined offset",
+			name: "success defined offset",
 			args: args{
 				method: http.MethodGet,
-				path:   "/articles?limit=5&offset=0",
+				path:   "/articles?offset=0",
 			},
 			wants: wants{
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(
-					[]m.ResArticle{
-						{
-							Id:          1,
-							Title:       "title 1",
-							Slug:        "article-1",
-							HtmlContent: "<p> this is article 1</p>",
-							ResCategory: m.ResCategory{
-								Id:    1,
-								Title: "category 1",
-								Slug:  "category-1",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
 						},
-						{
-							Id:          2,
-							Title:       "title 2",
-							Slug:        "article-2",
-							HtmlContent: "<p> this is article 2</p>",
-							ResCategory: m.ResCategory{
-								Id:    2,
-								Title: "category 2",
-								Slug:  "category-2",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:          2,
+						Title:       "title 2",
+						Slug:        "article-2",
+						HtmlContent: "<p> this is article 2</p>",
+						ResCategory: m.ResCategory{
+							Id:    2,
+							Title: "catgegory 2",
+							Slug:  "category-2",
 						},
-					}, nil)
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var articles []interface{}
+				for _, v := range data {
+					articles = append(articles, v)
+				}
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 100, 0).Return(articles, nil)
 			},
 		},
 		{
 			name: "error limit not an integer",
 			args: args{
 				method: http.MethodGet,
-				path:   "/articles?limit=not_integer&offset=0",
+				path:   "/articles?limit=not_integer",
 			},
 			wants: wants{
 				statusCode: http.StatusBadRequest,
@@ -179,20 +191,7 @@ func Test_handler_GetArticles(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error no data found",
-			args: args{
-				method: http.MethodGet,
-				path:   "/articles?limit=5&offset=0",
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return([]m.ResArticle{}, utils.ErrNotFound)
-			},
-		},
-		{
-			name: "error repository",
+			name: "error usecase",
 			args: args{
 				method: http.MethodGet,
 				path:   "/articles?limit=5&offset=0",
@@ -201,7 +200,7 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(nil, errors.New("repository error"))
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(nil, errors.New("usecase error"))
 			},
 		},
 	}
@@ -215,7 +214,7 @@ func Test_handler_GetArticles(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.GetArticles(c); err != nil {
@@ -226,12 +225,11 @@ func Test_handler_GetArticles(t *testing.T) {
 		})
 	}
 }
-
 func Test_handler_GetArticleDetails(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -256,19 +254,26 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title 1",
-					Slug:        "article-1",
-					HtmlContent: "<p> this is article 1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
+						},
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
 					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
+				}
+				var article []interface{}
+				for _, v := range data {
+					article = append(article, v)
+				}
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, nil)
 			},
 		},
 		{
@@ -292,11 +297,12 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{}, utils.ErrNotFound)
+				var article []interface{}
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, sql.ErrNoRows)
 			},
 		},
 		{
-			name: "repository error",
+			name: "usecase error",
 			args: args{
 				method: http.MethodGet,
 				path:   "/article?id=1",
@@ -305,19 +311,26 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title 1",
-					Slug:        "article-1",
-					HtmlContent: "<p> this is article 1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
+						},
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
 					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, errors.New("repository error"))
+				}
+				var article []interface{}
+				for _, v := range data {
+					article = append(article, v)
+				}
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, errors.New("usecase error"))
 			},
 		},
 	}
@@ -331,7 +344,7 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.GetArticleDetails(c); err != nil {

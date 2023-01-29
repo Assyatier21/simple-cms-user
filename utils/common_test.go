@@ -1,47 +1,63 @@
 package utils
 
 import (
+	m "cms-user/models"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"time"
 )
 
-func TestIsValidAlphabet(t *testing.T) {
-	result := IsValidAlphabet("alphabet")
-	assert.True(t, result)
+func TestFormatTimeResArticle(t *testing.T) {
+	// setup
+	createdAt := time.Now().Format("2006-01-02T15:04:05Z")
+	updatedAt := time.Now().Format("2006-01-02T15:04:05Z")
+	article := &m.ResArticle{Title: "Test Article", CreatedAt: createdAt, UpdatedAt: updatedAt}
 
-	result = IsValidAlphabet("123")
-	assert.False(t, result)
+	// run test
+	result := FormatTimeResArticle(article)
+
+	// asserts
+	expectedCreatedAt := FormattedTime(createdAt)
+	expectedUpdatedAt := FormattedTime(updatedAt)
+
+	if result.CreatedAt != expectedCreatedAt {
+		t.Errorf("Expected created at time to be %s, but got %s", expectedCreatedAt, result.CreatedAt)
+	}
+	if result.UpdatedAt != expectedUpdatedAt {
+		t.Errorf("Expected updated at time to be %s, but got %s", expectedUpdatedAt, result.UpdatedAt)
+	}
 }
+func TestFormatTimeResCategory(t *testing.T) {
+	// setup
+	createdAt := time.Now().Format("2006-01-02T15:04:05Z")
+	updatedAt := time.Now().Format("2006-01-02T15:04:05Z")
+	category := &m.Category{Title: "Test Category", CreatedAt: createdAt, UpdatedAt: updatedAt}
 
-func TestIsValidNumeric(t *testing.T) {
-	result := IsValidNumeric("123")
-	assert.True(t, result)
+	// run test
+	result := FormatTimeResCategory(category)
 
-	result = IsValidNumeric("invalid format string")
-	assert.False(t, result)
+	// asserts
+	expectedCreatedAt := FormattedTime(createdAt)
+	expectedUpdatedAt := FormattedTime(updatedAt)
+
+	if result.CreatedAt != expectedCreatedAt {
+		t.Errorf("Expected created at time to be %s, but got %s", expectedCreatedAt, result.CreatedAt)
+	}
+	if result.UpdatedAt != expectedUpdatedAt {
+		t.Errorf("Expected updated at time to be %s, but got %s", expectedUpdatedAt, result.UpdatedAt)
+	}
 }
-
-func TestIsValidAlphaNumeric(t *testing.T) {
-	result := IsValidAlphaNumeric("Alpha123")
-	assert.True(t, result)
-
-	result = IsValidAlphaNumeric("!@#")
-	assert.False(t, result)
-}
-
-func TestIsValidAlphaNumericHyphen(t *testing.T) {
-	result := IsValidAlphaNumericHyphen("valid-number-2-with-hyphen")
-	assert.True(t, result)
-
-	result = IsValidAlphaNumericHyphen("")
-	assert.False(t, result)
-}
-
 func TestFormattedTime(t *testing.T) {
-	result := FormattedTime("2022-12-20T12:34:56Z")
-	assert.Equal(t, "2022-12-20 12:34:56", result)
+	ts := time.Now().Format("2006-01-02T15:04:05Z")
 
-	result = FormattedTime("invalid time string")
-	assert.Equal(t, "", result)
+	result := FormattedTime(ts)
+	expected := time.Now().Format("2006-01-02 15:04:05")
+	if result != expected {
+		t.Errorf("Expected formatted time to be %s, but got %s", expected, result)
+	}
+
+	invalidTs := "invalid time format"
+	result = FormattedTime(invalidTs)
+	if result != "" {
+		t.Errorf("Expected empty string, but got %s", result)
+	}
 }

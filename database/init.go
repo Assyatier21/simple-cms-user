@@ -1,7 +1,7 @@
 package database
 
 import (
-	"cms/config"
+	"cms-user/config"
 	"database/sql"
 	"fmt"
 	"log"

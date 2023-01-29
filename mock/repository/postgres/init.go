@@ -5,38 +5,66 @@
 package mock_postgres
 
 import (
-	models "cms/models"
+	models "cms-user/models"
 	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockRepository is a mock of Repository interface.
-type MockRepository struct {
+// MockRepositoryHandler is a mock of RepositoryHandler interface.
+type MockRepositoryHandler struct {
 	ctrl     *gomock.Controller
-	recorder *MockRepositoryMockRecorder
+	recorder *MockRepositoryHandlerMockRecorder
 }
 
-// MockRepositoryMockRecorder is the mock recorder for MockRepository.
-type MockRepositoryMockRecorder struct {
-	mock *MockRepository
+// MockRepositoryHandlerMockRecorder is the mock recorder for MockRepositoryHandler.
+type MockRepositoryHandlerMockRecorder struct {
+	mock *MockRepositoryHandler
 }
 
-// NewMockRepository creates a new mock instance.
-func NewMockRepository(ctrl *gomock.Controller) *MockRepository {
-	mock := &MockRepository{ctrl: ctrl}
-	mock.recorder = &MockRepositoryMockRecorder{mock}
+// NewMockRepositoryHandler creates a new mock instance.
+func NewMockRepositoryHandler(ctrl *gomock.Controller) *MockRepositoryHandler {
+	mock := &MockRepositoryHandler{ctrl: ctrl}
+	mock.recorder = &MockRepositoryHandlerMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
+func (m *MockRepositoryHandler) EXPECT() *MockRepositoryHandlerMockRecorder {
 	return m.recorder
 }
 
+// DeleteArticle mocks base method.
+func (m *MockRepositoryHandler) DeleteArticle(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteArticle", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteArticle indicates an expected call of DeleteArticle.
+func (mr *MockRepositoryHandlerMockRecorder) DeleteArticle(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteArticle", reflect.TypeOf((*MockRepositoryHandler)(nil).DeleteArticle), ctx, id)
+}
+
+// DeleteCategory mocks base method.
+func (m *MockRepositoryHandler) DeleteCategory(ctx context.Context, id int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCategory", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteCategory indicates an expected call of DeleteCategory.
+func (mr *MockRepositoryHandlerMockRecorder) DeleteCategory(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCategory", reflect.TypeOf((*MockRepositoryHandler)(nil).DeleteCategory), ctx, id)
+}
+
 // GetArticleDetails mocks base method.
-func (m *MockRepository) GetArticleDetails(ctx context.Context, id int) (models.ResArticle, error) {
+func (m *MockRepositoryHandler) GetArticleDetails(ctx context.Context, id int) (models.ResArticle, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticleDetails", ctx, id)
 	ret0, _ := ret[0].(models.ResArticle)
@@ -45,13 +73,13 @@ func (m *MockRepository) GetArticleDetails(ctx context.Context, id int) (models.
 }
 
 // GetArticleDetails indicates an expected call of GetArticleDetails.
-func (mr *MockRepositoryMockRecorder) GetArticleDetails(ctx, id interface{}) *gomock.Call {
+func (mr *MockRepositoryHandlerMockRecorder) GetArticleDetails(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArticleDetails", reflect.TypeOf((*MockRepository)(nil).GetArticleDetails), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArticleDetails", reflect.TypeOf((*MockRepositoryHandler)(nil).GetArticleDetails), ctx, id)
 }
 
 // GetArticles mocks base method.
-func (m *MockRepository) GetArticles(ctx context.Context, limit, offset int) ([]models.ResArticle, error) {
+func (m *MockRepositoryHandler) GetArticles(ctx context.Context, limit, offset int) ([]models.ResArticle, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticles", ctx, limit, offset)
 	ret0, _ := ret[0].([]models.ResArticle)
@@ -60,28 +88,28 @@ func (m *MockRepository) GetArticles(ctx context.Context, limit, offset int) ([]
 }
 
 // GetArticles indicates an expected call of GetArticles.
-func (mr *MockRepositoryMockRecorder) GetArticles(ctx, limit, offset interface{}) *gomock.Call {
+func (mr *MockRepositoryHandlerMockRecorder) GetArticles(ctx, limit, offset interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArticles", reflect.TypeOf((*MockRepository)(nil).GetArticles), ctx, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArticles", reflect.TypeOf((*MockRepositoryHandler)(nil).GetArticles), ctx, limit, offset)
 }
 
-// GetCategoryByID mocks base method.
-func (m *MockRepository) GetCategoryByID(ctx context.Context, id int) (models.Category, error) {
+// GetCategoryDetails mocks base method.
+func (m *MockRepositoryHandler) GetCategoryDetails(ctx context.Context, id int) (models.Category, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCategoryByID", ctx, id)
+	ret := m.ctrl.Call(m, "GetCategoryDetails", ctx, id)
 	ret0, _ := ret[0].(models.Category)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetCategoryByID indicates an expected call of GetCategoryByID.
-func (mr *MockRepositoryMockRecorder) GetCategoryByID(ctx, id interface{}) *gomock.Call {
+// GetCategoryDetails indicates an expected call of GetCategoryDetails.
+func (mr *MockRepositoryHandlerMockRecorder) GetCategoryDetails(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryByID", reflect.TypeOf((*MockRepository)(nil).GetCategoryByID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryDetails", reflect.TypeOf((*MockRepositoryHandler)(nil).GetCategoryDetails), ctx, id)
 }
 
 // GetCategoryTree mocks base method.
-func (m *MockRepository) GetCategoryTree(ctx context.Context) ([]models.Category, error) {
+func (m *MockRepositoryHandler) GetCategoryTree(ctx context.Context) ([]models.Category, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategoryTree", ctx)
 	ret0, _ := ret[0].([]models.Category)
@@ -90,7 +118,67 @@ func (m *MockRepository) GetCategoryTree(ctx context.Context) ([]models.Category
 }
 
 // GetCategoryTree indicates an expected call of GetCategoryTree.
-func (mr *MockRepositoryMockRecorder) GetCategoryTree(ctx interface{}) *gomock.Call {
+func (mr *MockRepositoryHandlerMockRecorder) GetCategoryTree(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryTree", reflect.TypeOf((*MockRepository)(nil).GetCategoryTree), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryTree", reflect.TypeOf((*MockRepositoryHandler)(nil).GetCategoryTree), ctx)
+}
+
+// InsertArticle mocks base method.
+func (m *MockRepositoryHandler) InsertArticle(ctx context.Context, article models.Article) (models.ResArticle, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertArticle", ctx, article)
+	ret0, _ := ret[0].(models.ResArticle)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertArticle indicates an expected call of InsertArticle.
+func (mr *MockRepositoryHandlerMockRecorder) InsertArticle(ctx, article interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertArticle", reflect.TypeOf((*MockRepositoryHandler)(nil).InsertArticle), ctx, article)
+}
+
+// InsertCategory mocks base method.
+func (m *MockRepositoryHandler) InsertCategory(ctx context.Context, category models.Category) (models.Category, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertCategory", ctx, category)
+	ret0, _ := ret[0].(models.Category)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// InsertCategory indicates an expected call of InsertCategory.
+func (mr *MockRepositoryHandlerMockRecorder) InsertCategory(ctx, category interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertCategory", reflect.TypeOf((*MockRepositoryHandler)(nil).InsertCategory), ctx, category)
+}
+
+// UpdateArticle mocks base method.
+func (m *MockRepositoryHandler) UpdateArticle(ctx context.Context, article models.Article) (models.ResArticle, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateArticle", ctx, article)
+	ret0, _ := ret[0].(models.ResArticle)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateArticle indicates an expected call of UpdateArticle.
+func (mr *MockRepositoryHandlerMockRecorder) UpdateArticle(ctx, article interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateArticle", reflect.TypeOf((*MockRepositoryHandler)(nil).UpdateArticle), ctx, article)
+}
+
+// UpdateCategory mocks base method.
+func (m *MockRepositoryHandler) UpdateCategory(ctx context.Context, category models.Category) (models.Category, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCategory", ctx, category)
+	ret0, _ := ret[0].(models.Category)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateCategory indicates an expected call of UpdateCategory.
+func (mr *MockRepositoryHandlerMockRecorder) UpdateCategory(ctx, category interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCategory", reflect.TypeOf((*MockRepositoryHandler)(nil).UpdateCategory), ctx, category)
 }

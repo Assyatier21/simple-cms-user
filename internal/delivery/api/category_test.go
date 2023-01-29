@@ -1,15 +1,15 @@
 package api
 
 import (
-	mock_repo "cms/mock/repository/postgres"
-	m "cms/models"
-	"cms/utils"
+	mock_usecase "cms-user/mock/usecase"
+	m "cms-user/models"
+	"database/sql"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/go-playground/assert/v2"
+	"github.com/go-playground/assert"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 )
@@ -18,7 +18,7 @@ func Test_handler_GetCategoryTree(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -43,41 +43,31 @@ func Test_handler_GetCategoryTree(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryTree(gomock.Any()).Return(
-					[]m.Category{
-						{
-							Id:        1,
-							Title:     "category 1",
-							Slug:      "category-1",
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
-						},
-						{
-							Id:        2,
-							Title:     "category 2",
-							Slug:      "category-2",
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
-						},
-					}, nil)
+				data := []m.Category{
+					{
+						Id:        1,
+						Title:     "category 1",
+						Slug:      "category-1",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:        2,
+						Title:     "category 2",
+						Slug:      "category-2",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var categories []interface{}
+				for _, v := range data {
+					categories = append(categories, v)
+				}
+				mockUsecase.EXPECT().GetCategoryTree(gomock.Any()).Return(categories, nil)
 			},
 		},
 		{
-			name: "sql no rows error",
-			args: args{
-				method: http.MethodGet,
-				path:   "/categories",
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().GetCategoryTree(gomock.Any()).Return(
-					[]m.Category{}, utils.ErrNotFound)
-			},
-		},
-		{
-			name: "repository error",
+			name: "usecase error",
 			args: args{
 				method: http.MethodGet,
 				path:   "/categories",
@@ -86,23 +76,27 @@ func Test_handler_GetCategoryTree(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryTree(gomock.Any()).Return(
-					[]m.Category{
-						{
-							Id:        1,
-							Title:     "category 1",
-							Slug:      "category-1",
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
-						},
-						{
-							Id:        2,
-							Title:     "category 2",
-							Slug:      "category-2",
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
-						},
-					}, errors.New("repository error"))
+				data := []m.Category{
+					{
+						Id:        1,
+						Title:     "category 1",
+						Slug:      "category-1",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:        2,
+						Title:     "category 2",
+						Slug:      "category-2",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var categories []interface{}
+				for _, v := range data {
+					categories = append(categories, v)
+				}
+				mockUsecase.EXPECT().GetCategoryTree(gomock.Any()).Return(categories, errors.New("usecase error"))
 			},
 		},
 	}
@@ -116,23 +110,22 @@ func Test_handler_GetCategoryTree(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.GetCategoryTree(c); err != nil {
-				t.Errorf("handler.GetArticles() error = %v", err)
+				t.Errorf("handler.GetCategoryTree() error = %v", err)
 			}
 
 			assert.Equal(t, tt.wants.statusCode, rec.Code)
 		})
 	}
 }
-
-func Test_handler_GetCategoryByID(t *testing.T) {
+func Test_handler_GetCategoryDetails(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -157,20 +150,27 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{
-					Id:        1,
-					Title:     "category 1",
-					Slug:      "category-1",
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
+				data := []m.Category{
+					{
+						Id:        1,
+						Title:     "category 1",
+						Slug:      "category-1",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var category []interface{}
+				for _, v := range data {
+					category = append(category, v)
+				}
+				mockUsecase.EXPECT().GetCategoryDetails(gomock.Any(), 1).Return(category, nil)
 			},
 		},
 		{
 			name: "error id not an integer",
 			args: args{
 				method: http.MethodGet,
-				path:   "/category?id=not_integer",
+				path:   "/category?id=not_number",
 			},
 			wants: wants{
 				statusCode: http.StatusBadRequest,
@@ -178,7 +178,7 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "sql no rows error",
+			name: "error sql no rows affected",
 			args: args{
 				method: http.MethodGet,
 				path:   "/category?id=1",
@@ -187,11 +187,24 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{}, utils.ErrNotFound)
+				data := []m.Category{
+					{
+						Id:        1,
+						Title:     "category 1",
+						Slug:      "category-1",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var category []interface{}
+				for _, v := range data {
+					category = append(category, v)
+				}
+				mockUsecase.EXPECT().GetCategoryDetails(gomock.Any(), 1).Return(category, sql.ErrNoRows)
 			},
 		},
 		{
-			name: "repository error",
+			name: "error usecase",
 			args: args{
 				method: http.MethodGet,
 				path:   "/category?id=1",
@@ -200,13 +213,20 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{
-					Id:        1,
-					Title:     "category 1",
-					Slug:      "category-1",
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, errors.New("repository error"))
+				data := []m.Category{
+					{
+						Id:        1,
+						Title:     "category 1",
+						Slug:      "category-1",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var category []interface{}
+				for _, v := range data {
+					category = append(category, v)
+				}
+				mockUsecase.EXPECT().GetCategoryDetails(gomock.Any(), 1).Return(category, errors.New("usecase error"))
 			},
 		},
 	}
@@ -220,11 +240,11 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
-			if err := h.GetCategoryByID(c); err != nil {
-				t.Errorf("handler.GetCategoryByID() error = %v", err)
+			if err := h.GetCategoryDetails(c); err != nil {
+				t.Errorf("handler.GetCategoryDetails() error = %v", err)
 			}
 
 			assert.Equal(t, tt.wants.statusCode, rec.Code)
